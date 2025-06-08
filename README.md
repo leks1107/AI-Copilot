@@ -47,7 +47,7 @@ AI-powered real-time interview assistant that helps you excel in your interviews
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/ai-interview-copilot.git
+git clone https://github.com/leks1107ai-interview-copilot.git
 cd ai-interview-copilot
 ```
 
@@ -118,8 +118,8 @@ The project uses AssemblyAI's real-time transcription API for low-latency speech
 ## Development
 
 - Frontend runs on `http://localhost:3001`
-- Backend runs on `http://localhost:3000`
-- WebSocket server runs on `ws://localhost:3000/ws/transcription`
+- Backend runs on `http://${hostname}:8000`
+- WebSocket server runs on `ws://${hostname}:8000/ws/transcription`
 
 ## Contributing
 

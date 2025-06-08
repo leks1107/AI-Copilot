@@ -17,7 +17,7 @@ const ResumeUploader = ({ onResumeUpload }) => {
     formData.append('resume', file);
 
     try {
-      const response = await fetch('http://localhost:3000/api/uploadResume', {
+      const response = await fetch(`http://${window.location.hostname}:8000/api/uploadResume`, {
         method: 'POST',
         body: formData,
       });

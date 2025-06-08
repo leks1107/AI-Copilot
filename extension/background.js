@@ -4,13 +4,61 @@ let audioChunks = [];
 
 // Initialize WebSocket connection
 let ws = null;
-const connectWebSocket = () => {
-  ws = new WebSocket('ws://localhost:3000');
-  
-  ws.onclose = () => {
-    setTimeout(connectWebSocket, 1000);
-  };
-};
+
+// Handle messages from content script
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === 'start-socket') {
+    // Initialize WebSocket connection
+    ws = new WebSocket('ws://localhost:8000/ws/transcription');
+    
+    ws.onopen = () => {
+      console.log('WebSocket connected');
+      sendResponse({ status: 'connected' });
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        // Forward the message to content script
+        chrome.tabs.sendMessage(sender.tab.id, {
+          type: 'answer',
+          payload: data
+        });
+      } catch (error) {
+        console.error('Error processing WebSocket message:', error);
+      }
+    };
+
+    ws.onerror = (error) => {
+      console.error('WebSocket error:', error);
+      sendResponse({ status: 'error', error: 'WebSocket connection failed' });
+    };
+
+    ws.onclose = () => {
+      console.log('WebSocket disconnected');
+      sendResponse({ status: 'disconnected' });
+    };
+
+    return true; // Keep the message channel open for async response
+  }
+
+  if (message.type === 'stop-socket') {
+    if (ws) {
+      ws.close();
+      ws = null;
+    }
+    sendResponse({ status: 'stopped' });
+  }
+
+  if (message.type === 'audio-chunk') {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({
+        event: 'audio_chunk',
+        audio: message.audio
+      }));
+    }
+  }
+});
 
 // Start recording
 const startRecording = async () => {
@@ -29,14 +77,14 @@ const startRecording = async () => {
       formData.append('audio', audioBlob);
 
       try {
-        const response = await fetch('http://localhost:3000/api/transcribe', {
+        const response = await fetch(`http://${window.location.hostname}:8000/api/transcribe`, {
           method: 'POST',
           body: formData,
         });
         const data = await response.json();
         
         // Send transcription to GPT
-        const gptResponse = await fetch('http://localhost:3000/api/getAnswer', {
+        const gptResponse = await fetch(`http://${window.location.hostname}:8000/api/getAnswer`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

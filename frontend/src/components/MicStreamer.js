@@ -14,7 +14,7 @@ const MicStreamer = ({ onTranscript, onGptResponse }) => {
 
   // Initialize WebSocket connection
   const initWebSocket = () => {
-    wsRef.current = new WebSocket('ws://localhost:3000/ws/transcription');
+    wsRef.current = new WebSocket(`ws://${window.location.hostname}:8000/ws/transcription`);
 
     wsRef.current.onopen = () => {
       console.log('WebSocket connected');

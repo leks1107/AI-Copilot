@@ -1,19 +1,16 @@
 {
   "manifest_version": 3,
   "name": "AI Interview Copilot",
-  "version": "1.0.0",
-  "description": "AI-powered interview assistant with real-time responses",
+  "version": "1.0",
+  "description": "Real-time interview assistance with AI",
   "permissions": [
     "activeTab",
-    "scripting",
     "storage",
     "tabs"
   ],
   "host_permissions": [
-    "http://localhost:3000/*",
-    "https://meet.google.com/*",
-    "https://zoom.us/*",
-    "https://teams.microsoft.com/*"
+    "http://*/*",
+    "https://*/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -25,8 +22,7 @@
         "https://zoom.us/*",
         "https://teams.microsoft.com/*"
       ],
-      "js": ["content.js"],
-      "css": ["styles.css"]
+      "js": ["content.js"]
     }
   ],
   "action": {

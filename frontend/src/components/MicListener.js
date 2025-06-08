@@ -9,7 +9,7 @@ const MicListener = ({ isListening, onToggleListening, onTranscriptionComplete }
 
   useEffect(() => {
     // Initialize WebSocket connection
-    socket.current = new WebSocket('ws://localhost:3000');
+    socket.current = new WebSocket(`ws://${window.location.hostname}:8000/ws/transcription`);
 
     socket.current.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -41,7 +41,7 @@ const MicListener = ({ isListening, onToggleListening, onTranscriptionComplete }
         formData.append('audio', audioBlob);
 
         try {
-          const response = await fetch('http://localhost:3000/api/transcribe', {
+          const response = await fetch(`http://${window.location.hostname}:8000/api/transcribe`, {
             method: 'POST',
             body: formData,
           });
