@@ -7,7 +7,6 @@ import Settings from './components/Settings';
 
 function App() {
   const [currentAnswer, setCurrentAnswer] = useState('');
-  const [resumeData, setResumeData] = useState(null);
   const [settings, setSettings] = useState({
     language: 'en',
     stealthMode: true,
@@ -34,7 +33,7 @@ function App() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-6">
-            <ResumeUploader onResumeUpload={setResumeData} />
+            <ResumeUploader onResumeUpload={() => {}} />
             <Settings settings={settings} onSettingsChange={setSettings} />
           </div>
 
@@ -50,6 +49,7 @@ function App() {
           answer={currentAnswer}
           settings={settings}
           isVisible={!!currentAnswer}
+          onClose={() => setCurrentAnswer('')}
         />
       </main>
     </div>

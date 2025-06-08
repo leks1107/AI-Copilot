@@ -1,8 +1,13 @@
 {
   "manifest_version": 3,
   "name": "AI Interview Copilot",
-  "version": "1.0",
+  "version": "1.0.2",
   "description": "Real-time interview assistance with AI",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "permissions": [
     "activeTab",
     "storage",
@@ -13,7 +18,7 @@
     "https://*/*"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background_worker.js"
   },
   "content_scripts": [
     {
@@ -33,9 +38,7 @@
       "128": "icons/icon128.png"
     }
   },
-  "icons": {
-    "16": "icons/icon16.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
   }
 } 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 
-const AnswerOverlay = ({ answer, settings, isVisible }) => {
+const AnswerOverlay = ({ answer, settings, isVisible, onClose }) => {
   if (!isVisible) return null;
 
   const fontSizeClasses = {
@@ -24,7 +24,7 @@ const AnswerOverlay = ({ answer, settings, isVisible }) => {
         <h3 className="text-lg font-semibold text-gray-800">AI Assistant</h3>
         <button
           className="text-gray-500 hover:text-gray-700"
-          onClick={() => onClose()}
+          onClick={onClose}
         >
           <XMarkIcon className="h-5 w-5" />
         </button>

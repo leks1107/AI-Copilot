@@ -32,52 +32,85 @@ const updateOverlay = (text) => {
   }, 5000);
 };
 
-// Handle audio recording
+// Audio recording functionality
 let mediaRecorder = null;
 let audioChunks = [];
 
-const startRecording = async () => {
+// Start recording
+async function startRecording() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorder = new MediaRecorder(stream);
-    
+    audioChunks = [];
+
     mediaRecorder.ondataavailable = (event) => {
-      if (event.data.size > 0) {
-        audioChunks.push(event.data);
-        // Convert audio chunk to base64
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64Audio = reader.result.split(',')[1];
-          // Send audio chunk to background script
-          chrome.runtime.sendMessage({
-            type: 'audio-chunk',
-            audio: base64Audio
-          });
-        };
-        reader.readAsDataURL(event.data);
+      audioChunks.push(event.data);
+    };
+
+    mediaRecorder.onstop = async () => {
+      const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+      const formData = new FormData();
+      formData.append('audio', audioBlob);
+
+      try {
+        const response = await fetch(`http://${window.location.hostname}:8000/api/transcribe`, {
+          method: 'POST',
+          body: formData,
+        });
+        const data = await response.json();
+        
+        // Send transcription to GPT
+        const gptResponse = await fetch(`http://${window.location.hostname}:8000/api/getAnswer`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ text: data.text }),
+        });
+        const gptData = await gptResponse.json();
+
+        // Send answer to background script
+        chrome.runtime.sendMessage({
+          type: 'audio-chunk',
+          audio: gptData.answer
+        });
+      } catch (error) {
+        console.error('Error processing audio:', error);
       }
     };
 
-    mediaRecorder.start(1000); // Record in 1-second chunks
-    console.log('Recording started');
+    mediaRecorder.start();
   } catch (error) {
-    console.error('Error starting recording:', error);
+    console.error('Error accessing microphone:', error);
   }
-};
+}
 
-const stopRecording = () => {
-  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+// Stop recording
+function stopRecording() {
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
     mediaRecorder.stop();
     mediaRecorder.stream.getTracks().forEach(track => track.stop());
-    audioChunks = [];
-    console.log('Recording stopped');
   }
-};
+}
 
-// Initialize WebSocket connection through background script
-chrome.runtime.sendMessage({ type: 'start-socket' }, (response) => {
-  if (response.status === 'connected') {
+// Listen for messages from popup
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.type === 'startRecording') {
     startRecording();
+    sendResponse({ status: 'started' });
+  } else if (request.type === 'stopRecording') {
+    stopRecording();
+    sendResponse({ status: 'stopped' });
+  }
+  return true;
+});
+
+// Initialize WebSocket connection with background script when the content script loads
+chrome.runtime.sendMessage({ type: 'start-socket' }, (response) => {
+  if (response && response.status === 'connected') {
+    console.log('WebSocket connection established');
+  } else {
+    console.error('Failed to establish WebSocket connection:', response);
   }
 });
 

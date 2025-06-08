@@ -39,6 +39,9 @@ const MicStreamer = ({ onTranscript, onGptResponse }) => {
         case 'status':
           setIsConnected(data.status === 'connected');
           break;
+        default:
+          console.log('Unknown event type:', data.event);
+          break;
       }
     };
 
