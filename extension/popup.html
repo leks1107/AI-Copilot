@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Interview Copilot</title>
+  <style>
+    body {
+      width: 300px;
+      padding: 15px;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .button {
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.2s;
+    }
+
+    .start-button {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .start-button:hover {
+      background-color: #45a049;
+    }
+
+    .stop-button {
+      background-color: #f44336;
+      color: white;
+    }
+
+    .stop-button:hover {
+      background-color: #da190b;
+    }
+
+    .status {
+      text-align: center;
+      color: #666;
+    }
+
+    .settings {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #eee;
+    }
+
+    .settings label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .settings select {
+      width: 100%;
+      padding: 5px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>AI Interview Copilot</h2>
+    
+    <button id="toggleButton" class="button start-button">
+      Start Recording
+    </button>
+    
+    <div id="status" class="status">
+      Ready to start
+    </div>
+
+    <div class="settings">
+      <label for="language">Language:</label>
+      <select id="language">
+        <option value="en">English</option>
+        <option value="ru">Русский</option>
+      </select>
+
+      <label for="fontSize">Font Size:</label>
+      <select id="fontSize">
+        <option value="small">Small</option>
+        <option value="medium">Medium</option>
+        <option value="large">Large</option>
+      </select>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html> 
